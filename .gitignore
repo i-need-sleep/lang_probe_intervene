@@ -1,0 +1,35 @@
+# Misc
+*.pyc
+*/debug.py
+*/tutorial.py
+code/utils/keychain.py
+
+# Data
+data
+data/*/*
+*/data
+
+*.mid
+
+*.npy
+*.npz
+*.hi
+
+*.json
+*.jsonl
+*.csv
+
+*.jpg
+*.png
+*.pdf
+
+*.zip
+
+# Models
+pretrained
+results
+*.pt
+
+# sh
+*.err
+*.out
