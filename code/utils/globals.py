@@ -1,8 +1,10 @@
 # Data
 DATA_DIR = '../data'
 PROCESSED_DIR = f'{DATA_DIR}/processed'
+TRAINING_DIR = f'{PROCESSED_DIR}/training'
 
 COLORLESS_GREEN_PATH = f'{DATA_DIR}/colorless_green/generated.tab'
+COLORLESS_GREEN_HIDDEN_STATES_DIR = f'{PROCESSED_DIR}/colorless_green'
 
 # Pretrained checkpoints
 PRETRAINED_DIR = '../pretrained'
