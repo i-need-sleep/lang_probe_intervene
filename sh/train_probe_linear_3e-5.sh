@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --job-name=get_opt_hidden_states       # 任务名
+#SBATCH --job-name=train_probe_linear_3e-5       # 任务名
 #SBATCH --nodes=1                   # 这里不用动 多节点脚本请查官方文档
 #SBATCH --ntasks=1                  # 这里不用动 多任务脚本请查官方文档
 #SBATCH --cpus-per-task=4           # 要几块CPU (一般4块就够用了)
@@ -15,9 +15,12 @@
 
 nvidia-smi
 nvcc --version
-cd /l/users/yichen.huang/eval_attack/code   # 切到程序目录
+cd /l/users/yichen.huang/lang_probe_intervene/code   # 切到程序目录
 
 echo "START"               # 输出起始信息
-source /apps/local/anaconda3/bin/activate adv          # 调用 virtual env
-python -u debug.py 
+source /apps/local/anaconda3/bin/activate tim          # 调用 virtual env
+python -u train_probes.py \
+    --name_root linear_3e-5 \
+    --probe_type linear \
+    --lr 3e-5
 echo "FINISH"                       # 输出起始信息
