@@ -20,7 +20,7 @@ def main(debug=False, chunk_size=500):
     data = pd.read_csv(f'{uglobals.COLORLESS_GREEN_PATH}', sep='\t', header=0)
 
     # Get the hidden states
-    out_dict = {}
+    out_dict = {} # {sent_idx, [hidden_states]}
     with torch.no_grad():
         model.eval()
         for i in tqdm(range(len(data))):

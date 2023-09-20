@@ -60,6 +60,10 @@ class HiddenStatesDataset(Dataset):
             chunk = torch.load(f'{uglobals.COLORLESS_GREEN_HIDDEN_STATES_DIR}/{chunk_name}')
 
             for sent_idx in sorted(chunk.keys()):
+                # Correct/incorrect duplicates for the same sentence
+                if sent_idx % 2 == 1:
+                    continue
+                
                 hidden_states = chunk[sent_idx]
                 hidden_state = hidden_states[self.layer][0, :, :] # (seq_len, hidden_size)
 
