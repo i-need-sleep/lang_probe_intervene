@@ -21,32 +21,51 @@ class HiddenStatesDataset(Dataset):
     def slice_timesteps(self, data):
         # list of tensors [(seq_len, hidden_size)] to list of tensors [(hidden_size)]
         out = []
-        for line in data.values():
+        for sent_idx, line in data.items():
             hidden_states = line['hidden_state']
             singular = line['singular']
             for i in range(hidden_states.shape[0]):
                 out.append({
                     'hidden_state': hidden_states[i, :],
-                    'singular': singular
+                    'singular': singular,
+                    'send_idx': sent_idx,
+                    'token_idx': i,
+                    'context_token_len': hidden_states.shape[0],
+                    'token': line['tokens'][i]
                 })
         return out
 
     def make_splits(self, val_ratio=0.1):
-        data = self.prep_data() # {sent_idx, [hidden_states]}
+        data, original_ids = self.prep_data() # {sent_idx, [hidden_states]}
 
         # Split into train, val
-        indices = list(data.keys())
+        # indices = list(data.keys())
+        # random.shuffle(indices)
+        # val_size = int(val_ratio * len(indices))
+        # val_indices = indices[: val_size]
+        
+        # train_data = {}
+        # val_data = {}
+        # for sent_idx in data.keys():
+        #     if sent_idx in val_indices:
+        #         val_data[sent_idx] = data[sent_idx]
+        #     else:
+        #         train_data[sent_idx] = data[sent_idx]
+
+        # Make train/val splits by original ids
+        indices = list(range(len(original_ids)))
         random.shuffle(indices)
         val_size = int(val_ratio * len(indices))
         val_indices = indices[: val_size]
-        
+        val_original_ids = [original_ids[i] for i in val_indices]
+
         train_data = {}
         val_data = {}
-        for sent_idx in data.keys():
-            if sent_idx in val_indices:
-                val_data[sent_idx] = data[sent_idx]
+        for sent_idx, datum in data.items():
+            if datum['original_id'] in val_original_ids:
+                val_data[sent_idx] = datum
             else:
-                train_data[sent_idx] = data[sent_idx]
+                train_data[sent_idx] = datum
 
         torch.save(train_data, f'{uglobals.TRAINING_DIR}/train_{self.layer}.pt')
         torch.save(val_data, f'{uglobals.TRAINING_DIR}/val_{self.layer}.pt')
@@ -55,6 +74,9 @@ class HiddenStatesDataset(Dataset):
         data = {} 
         # {sent_idx, [hidden_states, singular]} 
         # singular = 1
+
+        # Keep track of the pattern
+        original_ids = []
 
         for chunk_idx, chunk_name in enumerate(sorted(os.listdir(uglobals.COLORLESS_GREEN_HIDDEN_STATES_DIR), key=lambda x: int(x.split('_')[-1][:-3]))):
             chunk = torch.load(f'{uglobals.COLORLESS_GREEN_HIDDEN_STATES_DIR}/{chunk_name}')
@@ -82,11 +104,18 @@ class HiddenStatesDataset(Dataset):
                 discarded = ' '.join(prefix.split(' ')[: -len_context])
                 discarded_len = len(self.tokenizer(discarded)['input_ids'])
 
+                original_id = self.metadata.iloc[sent_idx]['pattern'] + '_' + str(self.metadata.iloc[sent_idx]['constr_id'])
+                if original_id not in original_ids:
+                    original_ids.append(original_id)
+                patterns_idx = original_ids.index(original_id)
+
                 data[sent_idx] = {
                     'hidden_state': hidden_state[discarded_len: ],
-                    'singular': sing
+                    'singular': sing,
+                    'tokens': self.tokenizer(prefix)['input_ids'][discarded_len: ],
+                    'original_id': original_id,
                 }
-        return data
+        return data, original_ids
     
     def __len__(self):
         return len(self.data)

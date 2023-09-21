@@ -93,7 +93,7 @@ def main(args, layer_idx):
                 os.makedirs(f'{uglobals.CHECKPOINTS_DIR}/{args.name_root}/{args.name}')
             except FileExistsError:
                 pass
-            save_dir = f'{uglobals.CHECKPOINTS_DIR}/{args.name_root}/{args.name}/lr{args.lr}_{epoch}_{batch_idx}_{dev_loss}.bin'
+            save_dir = f'{uglobals.CHECKPOINTS_DIR}/{args.name_root}/{args.name}/lr{args.lr}.bin'
             print(f'Saving at: {save_dir}')
             torch.save({
                 'epoch': epoch,
