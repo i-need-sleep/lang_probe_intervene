@@ -16,3 +16,7 @@ OPT_TOKENIZER_DIR = f'{PRETRAINED_DIR}/tokenizers/opt-1.3b'
 RESULTS_DIR = '../results'
 CHECKPOINTS_DIR = f'{RESULTS_DIR}/checkpoints'
 OUTPUTS_DIR = f'{RESULTS_DIR}/outputs'
+
+# Logs
+LOGS_DIR = '../sh/logs'
+PROBING_LOGS_DIR = f'{LOGS_DIR}/probing'
