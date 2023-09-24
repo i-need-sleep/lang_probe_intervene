@@ -89,11 +89,14 @@ def main(probe_type, probe_name, starting_layer, original_only):
 
         prefix_len = 999
         for i in range(incorrect_ids.shape[1]):
+            if i >= correct_ids.shape[1]:
+                prefix_len = 999
+                break
             if incorrect_ids[0, i] != correct_ids[0, i]:
                 prefix_len = i
                 break
 
-        if prefix_len > max([len(prefix_incorrect), len(prefix_correct)]):
+        if prefix_len > max([len(prefix_incorrect), len(prefix_correct)]) or prefix_len == 999:
             cases_skipped += 1
             continue
 
@@ -132,7 +135,7 @@ def forward_and_intervene(ids, mask, tokenizer, opt, intervention, direction):
     return probs
 
 if __name__ == '__main__':
-    for original_only in [True, False]:
+    for original_only in [False, True]:
         for (probe_type, probe_name) in [
             ('linear', 'linear_3e-3'),
             ('mlp', 'mlp_3e-3')
