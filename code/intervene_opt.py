@@ -1,4 +1,5 @@
 import os
+import argparse
 
 import pandas as pd
 import torch
@@ -9,7 +10,7 @@ import models.opt_intervention_patch as opt_intervention
 import utils.globals as uglobals
 import utils.data_utils as data_utils
 
-def main(probe_type, probe_name, starting_layer, original_only):
+def main(probe_type, probe_name, starting_layer, original_only, indices_dir):
     # Setup
 
     # probe_type = 'linear'
@@ -23,7 +24,7 @@ def main(probe_type, probe_name, starting_layer, original_only):
     # text = 'The cat , master of many mats , '
     # direction = 0 # 1 = Singular
 
-    print(f'Probe: {probe_name}, starting layer: {starting_layer}, lr: {lr}, cutoff: {cutoff}, original only: {original_only}')
+    print(f'Probe: {probe_name}, starting layer: {starting_layer}, lr: {lr}, cutoff: {cutoff}, original only: {original_only}, indices: {indices_dir}')
 
     # Device
     if torch.cuda.is_available():
@@ -55,7 +56,7 @@ def main(probe_type, probe_name, starting_layer, original_only):
 
     # Data
     df = pd.read_csv(uglobals.COLORLESS_GREEN_PATH, sep='\t', header=0)
-    val_dict = torch.load(f'{uglobals.TRAINING_DIR}/val_0.pt')
+    val_dict = torch.load(indices_dir)
     val_indices = list(val_dict.keys())
 
     # Filter the indices
@@ -135,10 +136,24 @@ def forward_and_intervene(ids, mask, tokenizer, opt, intervention, direction):
     return probs
 
 if __name__ == '__main__':
-    for original_only in [True]:
+    for original_only in [False]:
         for (probe_type, probe_name) in [
-            ('linear', 'linear_3e-3'),
-            ('mlp', 'mlp_3e-3')
+            ('linear', 'linear_3e-3')
             ]:
-            for starting_layer in range(24, -1, -1):
-                    main(probe_type, probe_name, starting_layer, original_only)
+            for starting_layer in range(25, -1, -5):
+                    main(probe_type, probe_name, starting_layer, original_only, f'{uglobals.TRAINING_DIR}/train_0.pt')
+
+    # parser = argparse.ArgumentParser()
+
+    # # Probe
+    # parser.add_argument('--probe_type', type=str) # linear, mlp
+    # parser.add_argument('--probe_name', type=str) # in the checkpoint dir
+
+    # # Intervention
+    # parser.add_argument('--lr', default=1e-3, type=float)
+    # parser.add_argument('--cutoff', default=0.35, type=float) # distance to the flipped label
+    # parser.add_argument('--batch_size', default=16, type=int)
+
+    # parser.add_argument('--starting_layer', type=int)
+
+    # args = parser.parse_args()
