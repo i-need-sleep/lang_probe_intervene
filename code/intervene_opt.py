@@ -16,7 +16,7 @@ def main(probe_type, probe_name, starting_layer, original_only):
     # probe_name = 'linear_3e-3'
     
     lr = 1e-4
-    cutoff = 0.35 # The maximal distance to the set direnction
+    cutoff = 0.5 # The maximal distance to the set direnction
     # original_only = True # Only use non-synthesized texts
 
     # starting_layer = 26 # Debug
@@ -135,10 +135,10 @@ def forward_and_intervene(ids, mask, tokenizer, opt, intervention, direction):
     return probs
 
 if __name__ == '__main__':
-    for original_only in [False, True]:
+    for original_only in [True]:
         for (probe_type, probe_name) in [
             ('linear', 'linear_3e-3'),
             ('mlp', 'mlp_3e-3')
             ]:
-            for starting_layer in range(25):
+            for starting_layer in range(24, -1, -1):
                     main(probe_type, probe_name, starting_layer, original_only)
