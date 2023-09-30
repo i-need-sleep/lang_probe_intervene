@@ -58,6 +58,9 @@ class HiddenStatesDataset(Dataset):
         val_size = int(val_ratio * len(indices))
         val_indices = indices[: val_size]
         val_original_ids = [original_ids[i] for i in val_indices]
+        
+        # Such that all layers will follow the same splits 
+        val_original_ids = ['R__NOUN_NOUN_PUNCT_CCONJ_NOUN_NOUN_3', 'R__NOUN_PROPN_PROPN_ADP_VERB_0', 'R__NOUN_NOUN_PUNCT_CCONJ_NOUN_NOUN_4', 'R__VERB_NOUN_CCONJ_VERB_4', 'L__AUX_DET_ADJ_ADJ_NOUN_10', 'L__DET_ADJ_NOUN_1', 'L__DET_ADJ_NOUN_0', 'R__NOUN_PROPN_PROPN_ADP_VERB_12', 'R__VERB_NOUN_CCONJ_VERB_2', 'R__NOUN_ADJ_PUNCT_NOUN_0', 'R__NOUN_PROPN_PROPN_PRON_VERB_1', 'R__VERB_SCONJ_NOUN_VERB_0', 'L__AUX_DET_ADJ_ADJ_NOUN_8', 'R__VERB_VERB_CCONJ_PRON_VERB_1', 'R__NOUN_ADJ_PUNCT_NOUN_1', 'L__AUX_DET_NOUN_NOUN_2', 'R__VERB_PRON_DET_PROPN_NOUN_7', 'L__AUX_DET_ADJ_ADJ_NOUN_1', 'R__NOUN_PROPN_PROPN_ADP_VERB_8', 'R__NOUN_PROPN_PROPN_ADP_VERB_23', 'R__VERB_NOUN_ADP_PRON_0']
 
         train_data = {}
         val_data = {}
@@ -77,7 +80,7 @@ class HiddenStatesDataset(Dataset):
 
         # Keep track of the pattern
         original_ids = []
-
+        
         for chunk_idx, chunk_name in enumerate(sorted(os.listdir(uglobals.COLORLESS_GREEN_HIDDEN_STATES_DIR), key=lambda x: int(x.split('_')[-1][:-3]))):
             chunk = torch.load(f'{uglobals.COLORLESS_GREEN_HIDDEN_STATES_DIR}/{chunk_name}')
 

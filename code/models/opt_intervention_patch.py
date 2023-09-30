@@ -18,6 +18,10 @@ def make_patched_opt(probes, starting_layer, lr, cutoff, tokenizer_dir, checkpoi
     intervention = OPTIntervention(probes, starting_layer, lr, cutoff, device)
     opt.model.decoder.intervention = intervention
     opt.eval()
+
+    # Disable grad for opt parameters
+    for param in opt.parameters():
+        param.requires_grad = False
     
     return tokenizer, opt, intervention
 

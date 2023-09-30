@@ -155,7 +155,7 @@ if __name__ == '__main__':
     # Training
     parser.add_argument('--n_epoches', type=int, default=30)
     parser.add_argument('--batch_size', type=int, default=64)
-    parser.add_argument('--lr', default=3e-5, type=float)
+    parser.add_argument('--lr', type=float)
 
     args = parser.parse_args()
 
