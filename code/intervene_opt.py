@@ -136,13 +136,21 @@ def forward_and_intervene(ids, mask, tokenizer, opt, intervention, direction):
     return probs
 
 if __name__ == '__main__':
-    for original_only in [True]:
-        for (probe_type, probe_name) in [
-            # ('linear', 'linear_3e-3'),
-            ('mlp', 'mlp_3e-3')
-            ]:
-            for starting_layer in range(25, -1, -5): # 25 for the no intervention baseline
-                main(probe_type, probe_name, starting_layer, original_only, f'{uglobals.TRAINING_DIR}/val_0.pt')
+
+    cases = [f'n_attractor_{i}.pt' for i in range(4)] + ['len_context_less_than_7.pt', 'len_context_greatereq_than_7.pt']
+    for idx, case in enumerate(cases):
+        cases[idx] = 'breakdown/' + case
+    cases += ['training/train_0.pt', 'training/val_0.pt']
+
+    for case in cases:
+        print(case)
+        for original_only in [True]:
+            for (probe_type, probe_name) in [
+                ('linear', 'linear_3e-3'),
+                ('mlp', 'mlp_3e-3')
+                ]:
+                for starting_layer in range(25, -1, -5): # 25 for the no intervention baseline
+                    main(probe_type, probe_name, starting_layer, original_only, f'{uglobals.PROCESSED_DIR}/{case}')
 
     # parser = argparse.ArgumentParser()
 
