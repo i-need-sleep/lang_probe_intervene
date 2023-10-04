@@ -55,7 +55,8 @@ def main(args, layer_idx):
             running_loss += loss.detach()
 
         # Batch loss
-        print(f'Epoch {epoch} done. Loss: {running_loss/(n_iter-n_prev_iter)}')
+        if not args.silent or epoch == args.n_epoches - 1:
+            print(f'Epoch {epoch} done. Loss: {running_loss/(n_iter-n_prev_iter)}')
         writer.add_scalar('Loss/train_avg', running_loss/(n_iter-n_prev_iter), n_iter)
         n_prev_iter = n_iter
         running_loss = 0
@@ -74,17 +75,19 @@ def main(args, layer_idx):
             n_total += len(batch['hidden_state'])
 
         dev_loss = dev_loss / len(dev_loader)
-        print(f'Dev loss: {dev_loss}')
         writer.add_scalar('loss/dev', dev_loss, n_iter)
 
         dev_acc = n_hits / n_total
-        print(f'Dev accuracy: {dev_acc}')
+        if not args.silent or epoch == args.n_epoches - 1:
+            print(f'Dev loss: {dev_loss}')
+            print(f'Dev accuracy: {dev_acc}')
         writer.add_scalar('accuracy/dev', dev_acc, n_iter)
 
         # Save
         if dev_loss < best_dev_loss and not args.debug:
             best_dev_loss = dev_loss
-            print(f'Best dev loss: {best_dev_loss}')
+            if not args.silent or epoch == args.n_epoches - 1:
+                print(f'Best dev loss: {best_dev_loss}')
             try:
                 os.makedirs(f'{uglobals.CHECKPOINTS_DIR}/{args.name_root}')
             except FileExistsError:
@@ -94,7 +97,8 @@ def main(args, layer_idx):
             except FileExistsError:
                 pass
             save_dir = f'{uglobals.CHECKPOINTS_DIR}/{args.name_root}/{args.name}/lr{args.lr}.bin'
-            print(f'Saving at: {save_dir}')
+            if not args.silent or epoch == args.n_epoches - 1:
+                print(f'Saving at: {save_dir}')
             torch.save({
                 'epoch': epoch,
                 'step': n_iter,
@@ -156,6 +160,7 @@ if __name__ == '__main__':
     parser.add_argument('--n_epoches', type=int, default=30)
     parser.add_argument('--batch_size', type=int, default=64)
     parser.add_argument('--lr', type=float)
+    parser.add_argument('--silent', action='store_true')
 
     args = parser.parse_args()
 
@@ -164,7 +169,7 @@ if __name__ == '__main__':
         args.batch_size = 8
     print(args)
     
-    for layer_idx in range(25):
+    for layer_idx in [0, 5, 10, 15, 20, 24]:
         print(f'-----Probing layer {layer_idx}-----')
         args.name = f'{args.name_root}_layer{layer_idx}'
         main(args, layer_idx)

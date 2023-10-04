@@ -138,3 +138,40 @@ def make_hidden_states_loader(path, layer, batch_size, shuffle=True):
     dataset = HiddenStatesDataset(layer, load_path=path)
     loader = DataLoader(dataset, batch_size=batch_size, shuffle=shuffle, collate_fn=hidden_states_collate)
     return loader
+
+def get_indices_by_n_attractors():
+    df = pd.read_csv(uglobals.COLORLESS_GREEN_PATH, sep='\t', header=0)
+    max_n_attractor = df['n_attr'].max()
+
+    for n_attractor in range(max_n_attractor + 1):
+        indices = df[df['n_attr'] == n_attractor].index
+
+        out = {}
+        for index in indices:
+            if index % 2 == 0:
+                out[index] = True
+        
+        torch.save(out, f'{uglobals.PROCESSED_DIR}/breakdown/n_attractor_{n_attractor}.pt')
+    return
+
+def get_indices_by_context_length(cutoff=7):
+    df = pd.read_csv(uglobals.COLORLESS_GREEN_PATH, sep='\t', header=0)
+
+    indices = df[df['len_context'] < cutoff].index
+
+    out = {}
+    for index in indices:
+        if index % 2 == 0:
+            out[index] = True
+        
+    torch.save(out, f'{uglobals.PROCESSED_DIR}/breakdown/len_context_less_than_{cutoff}.pt')
+
+    indices = df[df['len_context'] >= cutoff].index
+
+    out = {}
+    for index in indices:
+        if index % 2 == 0:
+            out[index] = True
+        
+    torch.save(out, f'{uglobals.PROCESSED_DIR}/breakdown/len_context_greatereq_than_{cutoff}.pt')
+    return

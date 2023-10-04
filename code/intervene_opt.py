@@ -138,11 +138,11 @@ def forward_and_intervene(ids, mask, tokenizer, opt, intervention, direction):
 if __name__ == '__main__':
     for original_only in [True]:
         for (probe_type, probe_name) in [
-            # ('linear', 'linear_3e-3')
+            # ('linear', 'linear_3e-3'),
             ('mlp', 'mlp_3e-3')
             ]:
             for starting_layer in range(25, -1, -5): # 25 for the no intervention baseline
-                main(probe_type, probe_name, starting_layer, original_only, f'{uglobals.TRAINING_DIR}/train_0.pt')
+                main(probe_type, probe_name, starting_layer, original_only, f'{uglobals.TRAINING_DIR}/val_0.pt')
 
     # parser = argparse.ArgumentParser()
 
