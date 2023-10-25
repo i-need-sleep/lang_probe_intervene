@@ -12,6 +12,9 @@ PRETRAINED_DIR = '../pretrained'
 OPT_MODEL_DIR = f'{PRETRAINED_DIR}/models/opt-1.3b'
 OPT_TOKENIZER_DIR = f'{PRETRAINED_DIR}/tokenizers/opt-1.3b'
 
+OPT_MODEL_DIR_125M = f'{PRETRAINED_DIR}/models/opt-125m'
+OPT_TOKENIZER_DIR_125M = f'{PRETRAINED_DIR}/tokenizers/opt-125m'
+
 # Results
 RESULTS_DIR = '../results'
 CHECKPOINTS_DIR = f'{RESULTS_DIR}/checkpoints'

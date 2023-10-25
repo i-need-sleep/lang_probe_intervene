@@ -246,7 +246,7 @@ def patched_forward(
         if self.project_out is not None:
             hidden_states = self.project_out(hidden_states)
 
-        hidden_states = self.intervention.intervene(24, hidden_states)
+        hidden_states = self.intervention.intervene(len(self.layers), hidden_states)
 
         # add hidden states from the last decoder layer
         if output_hidden_states:

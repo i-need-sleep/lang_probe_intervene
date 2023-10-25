@@ -12,17 +12,9 @@ import utils.data_utils as data_utils
 
 def main(probe_type, probe_name, starting_layer, original_only, indices_dir):
     # Setup
-
-    # probe_type = 'linear'
-    # probe_name = 'linear_3e-3'
     
     lr = 1e-3
     cutoff = 0.35 # The maximal distance to the set direnction
-    # original_only = True # Only use non-synthesized texts
-
-    # starting_layer = 26 # Debug
-    # text = 'The cat , master of many mats , '
-    # direction = 0 # 1 = Singular
 
     print(f'Probe: {probe_name}, starting layer: {starting_layer}, lr: {lr}, cutoff: {cutoff}, original only: {original_only}, indices: {indices_dir}')
 
@@ -84,7 +76,8 @@ def main(probe_type, probe_name, starting_layer, original_only, indices_dir):
         # Intervene in the incorrect direction
         direction = 1 if line_incorrect['correct_number'] == 1 else 0
 
-        # Use as input the shared ids
+        # Find the shared prefix
+        # We intervene at the point where the incorrect and correct sentences diverge
         incorrect_ids = tokenizer(prefix_incorrect, return_tensors='pt')['input_ids']
         correct_ids = tokenizer(prefix_correct, return_tensors='pt')['input_ids']
 
@@ -111,6 +104,7 @@ def main(probe_type, probe_name, starting_layer, original_only, indices_dir):
         # Forward pass and intervention
         probs = forward_and_intervene(ids, mask, tokenizer, opt, intervention, direction)
         
+        # Statistics
         prob_diff = probs[id_incorrect] - probs[id_correct]
 
         id_ranks = torch.argsort(probs, descending=True)
@@ -137,32 +131,17 @@ def forward_and_intervene(ids, mask, tokenizer, opt, intervention, direction):
 
 if __name__ == '__main__':
 
-    cases = [f'n_attractor_{i}.pt' for i in range(4)] + ['len_context_less_than_7.pt', 'len_context_greatereq_than_7.pt']
-    for idx, case in enumerate(cases):
-        cases[idx] = 'breakdown/' + case
-    cases += ['training/train_0.pt', 'training/val_0.pt']
+    # cases = [f'n_attractor_{i}.pt' for i in range(4)] + ['len_context_less_than_7.pt', 'len_context_greatereq_than_7.pt']
+    # for idx, case in enumerate(cases):
+    #     cases[idx] = 'breakdown/' + case
+    cases = ['training/train_0.pt', 'training/val_0.pt'] # Used to filter the test cases
 
     for case in cases:
         print(case)
-        for original_only in [True]:
+        for original_only in [True]: # original_only = True # Only use non-synthesized texts
             for (probe_type, probe_name) in [
                 ('linear', 'linear_3e-3'),
                 ('mlp', 'mlp_3e-3')
                 ]:
-                for starting_layer in range(25, -1, -5): # 25 for the no intervention baseline
+                for starting_layer in range(0, 26, 5): # 25 for the no intervention baseline
                     main(probe_type, probe_name, starting_layer, original_only, f'{uglobals.PROCESSED_DIR}/{case}')
-
-    # parser = argparse.ArgumentParser()
-
-    # # Probe
-    # parser.add_argument('--probe_type', type=str) # linear, mlp
-    # parser.add_argument('--probe_name', type=str) # in the checkpoint dir
-
-    # # Intervention
-    # parser.add_argument('--lr', default=1e-3, type=float)
-    # parser.add_argument('--cutoff', default=0.35, type=float) # distance to the flipped label
-    # parser.add_argument('--batch_size', default=16, type=int)
-
-    # parser.add_argument('--starting_layer', type=int)
-
-    # args = parser.parse_args()

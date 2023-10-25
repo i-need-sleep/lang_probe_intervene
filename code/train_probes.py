@@ -27,7 +27,7 @@ def main(args, layer_idx):
     train_loader = data_utils.make_hidden_states_loader(f'{uglobals.TRAINING_DIR}/train_{layer_idx}.pt', layer_idx, batch_size=args.batch_size, shuffle=True)
     dev_loader = data_utils.make_hidden_states_loader(f'{uglobals.TRAINING_DIR}/val_{layer_idx}.pt', layer_idx, batch_size=args.batch_size, shuffle=False)
 
-    # Model
+    # Probe
     if args.probe_type == 'linear':
         model = probes.LinearProbe().to(device)
     elif args.probe_type == 'mlp':
@@ -150,7 +150,7 @@ def dev_step(batch, model, criterion, device):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
 
-    parser.add_argument('--name_root', default='unnamed')
+    parser.add_argument('--name_root', default='1.3b')
     parser.add_argument('--debug', action='store_true')
 
     # Formulation
@@ -169,7 +169,7 @@ if __name__ == '__main__':
         args.batch_size = 8
     print(args)
     
-    for layer_idx in [0, 5, 10, 15, 20, 24]:
+    for layer_idx in range(25): # layers 0-24. 0 is the embedding layer (before the first transformer block).
         print(f'-----Probing layer {layer_idx}-----')
         args.name = f'{args.name_root}_layer{layer_idx}'
         main(args, layer_idx)
