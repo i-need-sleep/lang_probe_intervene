@@ -13,4 +13,4 @@
 
 ## Intervention
 * With [code/intervene_opt.py](https://github.com/i-need-sleep/lang_probe_intervene/blob/main/code/intervene_opt.py).
-* See [code/models/opt_intervention_patch.py](https://github.com/i-need-sleep/lang_probe_intervene/blob/main/code/models/opt_intervention_patch.py) for a patched OPT forward functions applying intervention.
+* See [code/models/opt_intervention_patch.py](https://github.com/i-need-sleep/lang_probe_intervene/blob/main/code/models/opt_intervention_patch.py) for a patched OPT forward function applying intervention.
